@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+.ColumnName {
+    background: #a2a4af;
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 5px 5px 3px #888888;
+    margin : 10px 0px 15px 5px;
+    overflow: scroll;  /*总是显示滚动条*/  
+    overflow-x: hidden; /*去掉横向滚动条*/ 
+	}
+.TableContent{
+	 flex-grow : 1;
+    overflow-y : scroll;
+}

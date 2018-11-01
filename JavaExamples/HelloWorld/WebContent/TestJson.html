@@ -1,0 +1,42 @@
+<html>
+<body>
+<h2>在 JavaScript 中创建 JSON 对象</h2>
+
+<p>
+Name: <span id="jname"></span><br />
+Age: <span id="jage"></span><br />
+Address: <span id="jstreet"></span><br />
+Phone: <span id="jphone"></span><br />
+</p>
+
+<script type="text/javascript">
+var JSONObject= {
+"name":"Bill Gates",
+"street":"Fifth Avenue New York 666",
+"age":56,
+"phone":"555 1234567"};
+
+var myJSON={
+"myname":"zyk",
+"street":"东五里紫东苑",
+"age":65,
+"phone":"18034569352"};
+
+document.getElementById("jname").innerHTML=myJSON.myname
+document.getElementById("jage").innerHTML=JSONObject.age
+document.getElementById("jstreet").innerHTML=JSONObject.street
+document.getElementById("jphone").innerHTML=JSONObject.phone
+
+// 对象数据
+var employees = [
+	{ "firstName":"Bill" , "lastName":"Gates" },
+	{ "firstName":"George" , "lastName":"Bush" },
+	{ "firstName":"Thomas" , "lastName": "Carter" }
+	];
+employees[0].lastName;
+employees[0].lastName = "Jobs";
+
+</script>
+
+</body>
+</html>
