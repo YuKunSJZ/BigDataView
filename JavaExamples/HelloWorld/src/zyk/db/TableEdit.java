@@ -75,7 +75,26 @@ public class TableEdit {
 					sqlField.append(", ");
 					sqlField.append(myTableView.getTable().fieldDict.get(tableField).fieldName);
 					sqlValues.append(", ");
-					sqlValues.append("'" + myTableView.getTable().fieldDict.get(tableField).Value + "' ");
+					String myValue = myTableView.getTable().fieldDict.get(tableField).Value;
+
+					switch(myTableView.getTable().fieldDict.get(tableField).DataType) {
+					case DATETIME:
+						if(myValue==null || myValue=="") {
+							myValue =myTableView.getTable().fieldDict.get(tableField).defalutValue;
+						}else {
+							 myValue = "'" + myTableView.getTable().fieldDict.get(tableField).Value + "' ";
+						}
+						
+						break;
+					case INTEGER:
+						myValue =myTableView.getTable().fieldDict.get(tableField).Value;
+						break;
+						
+					 default:
+						 myValue = "'" + myTableView.getTable().fieldDict.get(tableField).Value + "' ";
+						 break;
+					}
+					sqlValues.append(myValue);
 				}
 
 				counter = counter+1;

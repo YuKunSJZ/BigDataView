@@ -117,8 +117,43 @@ CREATE TABLE `customerhistoryinvest` (
   INDEX `CustomerHistoryInvest_Customers_idx` (`CustomerID` ASC),
   CONSTRAINT `CustomerHistoryInvest_Customers`
     FOREIGN KEY (`CustomerID`)
-    REFERENCES `big_data_view`.`customers` (`CustomersID`)
+    REFERENCES `customers` (`CustomersID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 COMMENT = '客户投资记录';
+
+
+insert into `Tables`
+values ('Customers','客户表','test_db','CustomersID')
+;
+insert into `Tables`
+values ('CustomerHistoryInvest','客户投资历史表','test_db','ID')
+;
+
+insert into `TableFields`
+select Table_name,COLUMN_NAME,COLUMN_NAME,ordinal_position,DATA_TYPE,64,null from information_schema.COLUMNS where table_name = 'Customers' and table_schema = 'test_db'
+;
+
+
+insert into `TableFields`
+select Table_name,COLUMN_NAME,COLUMN_NAME,ordinal_position,DATA_TYPE,64,null from information_schema.COLUMNS where table_name = 'CustomerHistoryInvest' and table_schema = 'test_db'
+;
+alter table Customers change PoneNumber PhoneNumber varchar(50)
+;
+
+set sql_safe_updates = 0
+;
+update TableFields 
+set FieldName = 'PhoneNumber'
+    ,FieldAlias  ='PhoneNumber'
+where FieldName='PoneNumber'
+;
+
+update TableFields
+set DefaultValue = 'now()'
+where TableName = 'customers' 
+and FieldName in ('TimeCreated',
+'TimeUpdated')
+;
+
 

@@ -53,6 +53,7 @@ public class Table {
 		mySql.append(",FieldSequence ");
 		mySql.append(",DataType ");
 		mySql.append(",DataLength ");
+		mySql.append(",DefaultValue ");
 		mySql.append("from TableFields ");
 		mySql.append("where TableName = '" + this.tableName + "'");
 		mySql.append("order by FieldSequence ");
@@ -66,6 +67,7 @@ public class Table {
 			myField.fieldName = myRs.getString("FieldName");
 			myField.fieldAlias = myRs.getString("FieldAlias");
 			myField.DataType= parseFieldDataType(myRs.getString("DataType"));
+			myField.defalutValue = myRs.getString("DefaultValue");
 //			try {
 //				myBase.printPage(myField.DataType.toString());
 //			} catch (IOException e) {
@@ -83,6 +85,9 @@ public class Table {
 		switch(_dataTypeStr) {
 		case "varchar":
 			return  Base.DataTypeEnum.STRING;
+			
+		case "datetime":
+			return  Base.DataTypeEnum.DATETIME;
 			
 		case "int":
 			return Base.DataTypeEnum.INTEGER;

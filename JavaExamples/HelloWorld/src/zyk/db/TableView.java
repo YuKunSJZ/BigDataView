@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import zyk.db.AccessDB.DBList;
 
@@ -14,30 +15,21 @@ import zyk.db.AccessDB.DBList;
 *   说明：
 */
 public class TableView {
-	Base myBase;
-	private Table myTable;
+
 	public Table getTable() {
 		return myTable;
 	}
+	Base myBase;
+	private Table myTable;
+	private BuildSQL myBuildSQL;
 
-	private String limitStart ="0";
-	private String limitEnd = "100";
-	private boolean isTableViewPage = true;
+
 	public TableView(String _tableName,Base _base) throws SQLException {
 		myBase = _base;
-		myTable = new Table(_tableName,_base);
-		for (String tableField:myTable.fieldDict.keySet()) {
-			if (myBase.request.getParameter(tableField) != null) {
-				myTable.fieldDict.get(tableField).Value = myBase.request.getParameter(tableField);
-			}
-		}
+		myBuildSQL = new BuildSQL(_base);
+		myBuildSQL.create(_tableName);
+		myTable=myBuildSQL.myTable;
 		
-		if (myBase.request.getParameter("limitStart") !=null ) {
-			limitStart = myBase.request.getParameter("limitStart");
-		}
-		if (myBase.request.getParameter("limitEnd") !=null ) {
-			limitEnd = myBase.request.getParameter("limitEnd");
-		}
 	}
 		
 	public void getConlumnName() throws IOException {
@@ -61,42 +53,25 @@ public class TableView {
 	}
 	
 	
-	private ResultSet getTableResultSet() {
-		StringBuilder strB = new StringBuilder();
-		int i = 0;
-		Field myField;
+	public void getLeftMenu() throws IOException, SQLException {
+		TableView myTableView = new TableView("Links",myBase);
+		LinkedHashMap<String,String> myLinks = new LinkedHashMap<String,String>();
+		//myLinks.put(myTableView.getSingleColumn(_Column), value)
 		
-		strB.append("select ");
-		for (String tableField : myTable.fieldDict.keySet()) {
-			myField = myTable.fieldDict.get(tableField);
+		
+		myBase.printPage("<div>站点："+myTable.tableName+"</div>");
+		myBase.printPage("<form action=\"TableEdit.jsp\" method=\"get\">");
+		myBase.printPage(" <input style=\"display:none\"  type=\"text\" name=\"Table\" value=\""+ myTable.tableName +"\" />");
+		myBase.printPage(" <input style=\"display:none\"  type=\"text\" name=\"TableAction\" value=\"Add\" />");
+		myBase.printPage(" <input type=\"submit\" value=\"添加记录\" />");
+		myBase.printPage("</form>");
 
-			if (i == 0) {
-				strB.append(myField.fieldName + " ");
-			}else {
-				strB.append("," + myField.fieldName + " ");
-			}
-			i = i+1;
-		}
-		strB.append("from " + myTable.tableName + " ");
-		if (isTableViewPage) {
-			for (String tableField:this.myTable.fieldDict.keySet()) {
-				int counter = 0;
-				if(!myTable.fieldDict.get(tableField).Value.equals("null")) {
-					if(counter==0 && strB.indexOf("where") < 0) {
-						strB.append(" where ");
-					}else {
-						strB.append(" and ");
-					}
-					strB.append(tableField + "='" +myTable.fieldDict.get(tableField).Value + "' ");
-					counter = counter+1;
-				}
-		}
-		}
-		strB.append("limit " + limitStart + " , " + limitEnd + " ");
-		strB.append(";");
-		
+	}
+	
+	private ResultSet getTableResultSet(Boolean _isTableViewPage) {
+		myBuildSQL.isTableViewPage = _isTableViewPage;
 		AccessDB myAdb = new AccessDB(DBList.TEST_DB,myBase);
-		return myAdb.sql2RS(strB.toString());
+		return myAdb.sql2RS(myBuildSQL.getSQL());
 		
 	}
 	public void printTableLines(ResultSet _resultSet) throws SQLException, IOException {
@@ -112,13 +87,11 @@ public class TableView {
 	}
 	
 	public List<String> getSingleColumn(String _Column) throws SQLException {
-		isTableViewPage = false;
-		ResultSet _resultSet = getTableResultSet();
+		ResultSet _resultSet = getTableResultSet(false);
 		List<String> myList = new ArrayList<String>();
 		while (_resultSet.next()) {
 			myList.add(_resultSet.getString(_Column));
 		}
-		_resultSet.close();
 		return myList;
 	}
 	
@@ -147,7 +120,7 @@ public class TableView {
 		myBase.printPage("<table>");
 		getTableEditBanner();
 		getConlumnName();
-		printTableLines(getTableResultSet());
+		printTableLines(getTableResultSet(true));
 		myBase.printPage("</table>");
 
 	}
@@ -156,7 +129,7 @@ public class TableView {
 		myBase.printPage("<table>");
 		getTableEditBanner();
 		getConlumnName();
-		printTableLines(getTableResultSet());
+		printTableLines(getTableResultSet(true));
 		myBase.printPage("</table>");
 
 	}

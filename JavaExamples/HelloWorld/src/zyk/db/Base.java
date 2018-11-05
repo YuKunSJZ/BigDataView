@@ -21,6 +21,7 @@ public class Base {
 	public enum DataTypeEnum{
 		INTEGER,
 		STRING,
+		DATETIME,
 		LINK,
 		PICTRUE
 	}
