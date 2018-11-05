@@ -77,7 +77,7 @@ public class TableView {
 			}
 			i = i+1;
 		}
-		strB.append("from " + myTable.tableAlias + " ");
+		strB.append("from " + myTable.tableName + " ");
 		if (isTableViewPage) {
 			for (String tableField:this.myTable.fieldDict.keySet()) {
 				int counter = 0;
