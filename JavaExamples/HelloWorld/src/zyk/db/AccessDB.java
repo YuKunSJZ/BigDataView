@@ -17,8 +17,9 @@ public class AccessDB {
 	
 	DBList DBName;
 	String DB_URL;
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String USER = "root";
+//	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+	String USER = "root";
 	static final String PASS = "mysqldb";
 	Connection conn = null;
 	Statement stmt = null;
@@ -110,7 +111,8 @@ public class AccessDB {
 				myBase.printPage("<xmp>" + _sql + "</xmp>");
 			}
 			this.stmt = conn.createStatement();
-			return this.stmt.executeQuery(_sql);
+			ResultSet myResult = this.stmt.executeQuery(_sql);
+			return myResult;
 			
 		} catch (Exception e) {
 			myBase.printPage("<xmp>" + _sql + "</xmp>");
@@ -123,6 +125,10 @@ public class AccessDB {
 
 		}
 		return null;
+	}
+	
+	public void close() throws SQLException {
+		conn.close();
 	}
 	/*
     public static void main(String[] args) {

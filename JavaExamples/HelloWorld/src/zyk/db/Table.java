@@ -42,6 +42,7 @@ public class Table {
 			this.tableSchema = myRs.getString("TableSchema");
 			this.tableAlias = myRs.getString("TableAlias");
 		}
+
 	}
 	
 	private void setField() throws SQLException {

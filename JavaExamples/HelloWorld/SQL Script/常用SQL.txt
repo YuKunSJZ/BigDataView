@@ -1,0 +1,33 @@
+-- row_number()
+SELECT
+idcode,
+@row_number := case when @last = idcode then @row_number+1 else 1 END
+,@last := idcode as idcode
+,a.*
+from 
+(SELECT * from m_dim_customer where sysid = 'ryan_dz' and idcode is not null  and idcode = '13012919931122211x' order by idcode,entertime ) a
+,(select @row_number:= 0 ,@last := 0) b
+;
+
+-- GETNUM
+
+delimiter //
+CREATE FUNCTION GetNum2 (Varstring varchar(50))
+RETURNS varchar(30)
+BEGIN
+DECLARE v_length INT DEFAULT 0;
+DECLARE v_Tmp varchar(50) default '';
+set v_length=CHAR_LENGTH(Varstring);
+WHILE v_length > 0 DO
+IF (ASCII(mid(Varstring,v_length,1))>47 and ASCII(mid(Varstring,v_length,1))<58 ) THEN
+-- set v_Tmp=concat(v_Tmp,mid(Varstring,v_length,1));
+set v_Tmp=concat(mid(Varstring,v_length,1),v_Tmp);
+END IF;
+SET v_length = v_length - 1;
+END WHILE;
+RETURN v_Tmp;
+END;
+
+
+
+

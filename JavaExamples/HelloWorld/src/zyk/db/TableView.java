@@ -118,6 +118,7 @@ public class TableView {
 		while (_resultSet.next()) {
 			myList.add(_resultSet.getString(_Column));
 		}
+		_resultSet.close();
 		return myList;
 	}
 	
