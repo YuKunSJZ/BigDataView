@@ -43,7 +43,7 @@ public class TableView {
 	}
 	
 	public void getTableEditBanner() throws IOException {
-		myBase.printPage("<div>当前视图："+myTable.tableName+"</div>");
+		myBase.printPage("<div>当前视图 :  "+myTable.tableAlias+" ("+myTable.tableName+")</div>");
 		myBase.printPage("<form action=\"TableEdit.jsp\" method=\"get\">");
 		myBase.printPage(" <input style=\"display:none\"  type=\"text\" name=\"Table\" value=\""+ myTable.tableName +"\" />");
 		myBase.printPage(" <input style=\"display:none\"  type=\"text\" name=\"TableAction\" value=\"Add\" />");
@@ -76,9 +76,9 @@ public class TableView {
 	}
 	public void printTableLines(ResultSet _resultSet) throws SQLException, IOException {
 		while (_resultSet.next()) {
-			myBase.printPage("<tr>");
+			myBase.printPage("<tr class=\"rowborder\">");
 			for(String tableField:myTable.fieldDict.keySet()) {
-				myBase.printPage("<td>");
+				myBase.printPage("<td class=\"field\">");
 				myBase.printPage(Base.Format(_resultSet.getString(tableField), myTable.fieldDict.get(tableField).DataType, myTable.fieldDict.get(tableField).dataLength));
 				myBase.printPage("</td>");
 			}
@@ -117,7 +117,7 @@ public class TableView {
 	}
 	
 	public void printTable() throws SQLException, IOException {
-		myBase.printPage("<table>");
+		myBase.printPage("<table class=\"tableborder\">");
 		getTableEditBanner();
 		getConlumnName();
 		printTableLines(getTableResultSet(true));

@@ -36,6 +36,7 @@ public class Base {
 		response = _response;
 	}
 	
+	
 	public void printPage(String _string) {
 		try {
 			this.response.getWriter().print(_string);
@@ -71,6 +72,16 @@ public class Base {
 			break;
 		}
 	}
+
+	public String  getDotLine(int _counter) {
+		String strLine="";
+		for (int i=0;i<_counter;i++){
+			strLine+=("-");
+		}
+		
+		return strLine;
+	}
+	
 	
 
 }
