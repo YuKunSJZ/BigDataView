@@ -88,3 +88,66 @@ ORDER BY
 	profit_rate
 ;
 
+-- 2018.11.15优化
+select 
+ case when b.undefine1 = '开放期产品'  THEN '安享开放' else b.parent_name end parent_name
+,case when b.if_current = 1 then '活期' else b.limit_time end as limit_time
+-- ,ifnull(hq_lv,b.profit_rate) as profit_rate
+,case when hq_lv is null and b.if_current=0 then profit_rate else null end
+,sum(case when a.stock_type='stock' and stock_date = last_day(date_add('2018-11-14',interval -1 month)) then contract_amount else 0 end) last_stock
+,sum(case when a.stock_type='flow_in' and stock_date = '2018-11-14' then contract_amount else 0 end) cur_flow_in
+,sum(case when a.stock_type='flow_out' and stock_date = '2018-11-14' then contract_amount else 0 end) cur_flow_out
+,sum(case when a.stock_type='stock' and stock_date = '2018-11-14' then contract_amount else 0 end) cur_stock
+from (select * from dm_db.dm_stock_in_agent_product where stock_date in ('2018-11-14',last_day(date_add('2018-11-14',interval -1 month))) and sysid='ryan_dz') a
+left join (select * from dw_db.m_dim_product_finance where sysid = 'ryan_dz') b on a.product_id=b.id
+group by 
+ case when b.undefine1 = '开放期产品'  THEN '安享开放' else b.parent_name end
+,case when b.if_current = 1 then '活期' else b.limit_time end 
+,case when hq_lv is null and b.if_current=0 then profit_rate else null end
+ORDER BY
+	locate(
+		parent_name,
+		'受托管理资产-控股,世纪安赢,五二零,幸福壹号,创赢,安盈家园,安享计划,安享开放,瑞安基金,科慧计划,渤海一号,岁岁生金,岁岁满金,薪火创盈,启鑫基金,共赢1号'
+	),
+	limit_time + 0,
+	profit_rate
+;
+
+-- 新投流入
+SELECT
+	agent_name,
+	sum(amount)/10000 as newaddtotal
+FROM
+ m_fact_contract_finance 
+where classify = '1'
+and begin_time >= '${begin}' AND begin_time <= '${end}'
+and sysid = 'ryan_dz'
+GROUP BY
+	agent_name
+
+-- 转投加钱
+SELECT
+	a.agent_name,
+	sum(ifnull(a.additional_amount, 0))/10000 as newaddtotal
+FROM
+	m_fact_contract_finance a
+WHERE a.classify = '4'
+and a.begin_time >= '${begin}' AND a.begin_time <= '${end}'
+and a.sysid = 'ryan_dz'
+GROUP BY
+	a.agent_name
+
+-- 结息
+select agent_name,sum(return_money)/10000 as totalout from m_fact_rates_finance
+WHERE return_time >= '${begin}' AND return_time <= '${end}'
+GROUP BY agent_name
+
+-- 结算
+SELECT jbr_name,
+	  sum(ht_je_xx)/10000 as totalout
+  FROM m_fact_ra_lc
+ where date(input_time) >= '${begin}'
+   AND date(input_time) <= '${end}'
+   and cp_name not in (SELECT name FROM m_dim_product_finance where undefine1 = '梯度收益')
+   and cp_name not in (SELECT name FROM m_dim_product_finance where if_current = 1)
+ group by jbr_name
